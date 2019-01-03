@@ -1,16 +1,21 @@
 import java.awt.EventQueue;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
 
 import javax.swing.JFrame;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
+
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.text.NumberFormat;
 import java.util.Random;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -28,6 +33,8 @@ public class GUI {
 	int result = 0;
 	Thread t;
 	Robot robot;
+	private JTextField textField;
+	private JTextField textField_1;
 
 	/**
 	 * Launch the application.
@@ -59,7 +66,7 @@ public class GUI {
 		frmMouseclicker = new JFrame();
 		frmMouseclicker.setTitle("AutoClick");
 		frmMouseclicker.setResizable(false);
-		frmMouseclicker.setBounds(100, 100, 272, 172);
+		frmMouseclicker.setBounds(100, 100, 235, 164);
 		frmMouseclicker.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmMouseclicker.getContentPane().setLayout(null);
 
@@ -87,7 +94,7 @@ public class GUI {
 							robot.mousePress(InputEvent.BUTTON1_MASK);
 							robot.mouseRelease(InputEvent.BUTTON1_MASK);
 							robot.delay(result);
-							//System.out.println(result);
+							System.out.println(result);
 							//System.out.println(Start);
 							//count++;
 						}
@@ -98,7 +105,7 @@ public class GUI {
 		});
 		
 		//btnNewButton.addActionListener(buttonpressed);
-		btnNewButton.setBounds(70, 28, 124, 23);
+		btnNewButton.setBounds(10, 90, 90, 23);
 		frmMouseclicker.getContentPane().add(btnNewButton);
 		
 		//btnNewButton.getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW).
@@ -117,8 +124,67 @@ public class GUI {
 			}
 		});
 		
-		btnStop.setBounds(70, 79, 124, 23);
+		btnStop.setBounds(117, 90, 90, 23);
 		frmMouseclicker.getContentPane().add(btnStop);
+		
+		JLabel lblMinimumInterval = new JLabel("Min Interval (Seconds)");
+		lblMinimumInterval.setBounds(10, 24, 137, 14);
+		frmMouseclicker.getContentPane().add(lblMinimumInterval);
+		
+		//amountFormat = NumberFormat.getNumberInstance();
+		textField = new JTextField();
+		textField.setBounds(157, 21, 21, 20);
+		frmMouseclicker.getContentPane().add(textField);
+		textField.setColumns(1);
+		
+		textField.addKeyListener(new KeyAdapter() {
+			public void keyReleased(java.awt.event.KeyEvent evt) {
+				try {
+	                low = Integer.parseInt(textField.getText()) * 1000;
+	            } 
+				
+				catch (Exception e) {
+	                
+	            	if (textField.getText().trim().equals("")) {
+	                	//JOptionPane.showMessageDialog(frmMouseclicker, "Blank");
+	                }
+	                else {
+	                	JOptionPane.showMessageDialog(frmMouseclicker, "Only Numbers Allowed");
+	                	textField.setText("");
+	                }
+	                //textField.setText("");
+	            }
+			}
+		});
+		
+		JLabel lblMaximumInterval = new JLabel("Max Interval (Seconds)");
+		lblMaximumInterval.setBounds(10, 49, 137, 14);
+		frmMouseclicker.getContentPane().add(lblMaximumInterval);
+		
+		textField_1 = new JTextField();
+		textField_1.setColumns(1);
+		textField_1.setBounds(157, 46, 21, 20);
+		frmMouseclicker.getContentPane().add(textField_1);
+		
+		textField_1.addKeyListener(new KeyAdapter() {
+			public void keyReleased(java.awt.event.KeyEvent evt) {
+				try {
+	                high = Integer.parseInt(textField_1.getText()) * 1000;
+	            } 
+				
+				catch (Exception e) {
+	                
+	            	if (textField_1.getText().trim().equals("")) {
+	                	//JOptionPane.showMessageDialog(frmMouseclicker, "Blank");
+	                }
+	                else {
+	                	JOptionPane.showMessageDialog(frmMouseclicker, "Only Numbers Allowed");
+	                	textField_1.setText("");
+	                }
+	                //textField.setText("");
+	            }
+			}
+		});
 		
 	}
 }
