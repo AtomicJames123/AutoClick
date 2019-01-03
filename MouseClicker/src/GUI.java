@@ -94,7 +94,7 @@ public class GUI {
 							robot.mousePress(InputEvent.BUTTON1_MASK);
 							robot.mouseRelease(InputEvent.BUTTON1_MASK);
 							robot.delay(result);
-							System.out.println(result);
+							//System.out.println(result);
 							//System.out.println(Start);
 							//count++;
 						}
