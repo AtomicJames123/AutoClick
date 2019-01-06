@@ -5,13 +5,17 @@ import java.awt.event.KeyAdapter;
 
 import javax.swing.JFrame;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+
 import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -25,12 +29,11 @@ public class GUI {
 
 	private JFrame frmMouseclicker;
 	static boolean Start = false;
-	
 	int count = 0;
 	Random random = new Random();
-	int low = 2000;
-	int high = 3000;
-	int result = 0;
+	double low = 2.0;
+	double high = 3.0;
+	double result = 0.0;
 	Thread t;
 	Robot robot;
 	private JTextField textField;
@@ -79,50 +82,80 @@ public class GUI {
 			
 		}
 		
-		JButton btnNewButton = new JButton("Start");
-		//AbstractAction buttonpressed = new AbstractAction() {
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btnNewButton = new JButton("Start (F1)");
+		AbstractAction buttonAction = new AbstractAction("Start (F1)") {
+		//btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Start = true;
-				//System.out.println("Clicking has started with a value of: " + Start);
-				//MouseClickThread thread = new MouseClickThread();
-				//thread.start();
+				
+				if (textField.getText().equals("") && textField_1.getText().equals("")) {
+					JOptionPane.showMessageDialog(frmMouseclicker, "Minimum value will be set to default value of 2 seconds and Maximum value will be set default value of 3 seconds.");
+					low = 2.0;
+					high = 3.0;
+					Start = true;
+				}
+				
+				else if (textField.getText().equals("")) {
+					JOptionPane.showMessageDialog(frmMouseclicker, "Minimum value will be set to default value of 2 seconds.");
+					low = 2.0;
+					Start = true;
+				}
+				
+				else if (textField_1.getText().equals("")) {
+					JOptionPane.showMessageDialog(frmMouseclicker, "Maximum value will be set to default value of 3 seconds.");
+					high = 3.0;
+					Start = true;
+				}
+				
+				else if (low > high) {
+					JOptionPane.showMessageDialog(frmMouseclicker, "Minimum value cannot be greater then the Maximum value.");
+					textField.setText("");
+					textField_1.setText("");
+					Start = false;
+				}
+				
+				else {
+					Start = true;
+				}
+				
 				t = new Thread() {
 					public void run() {
 						while (Start) {
-							result = random.nextInt(high - low) + low;
+							result = low + (high - low) * random.nextDouble();
+							result = result * 1000.0;
 							robot.mousePress(InputEvent.BUTTON1_MASK);
 							robot.mouseRelease(InputEvent.BUTTON1_MASK);
-							robot.delay(result);
-							//System.out.println(result);
-							//System.out.println(Start);
-							//count++;
+							robot.delay((int) result);
 						}
 					}
 				};
 				t.start();
 			}
-		});
+		};
 		
-		//btnNewButton.addActionListener(buttonpressed);
+		btnNewButton.setAction(buttonAction);
+		
+		btnNewButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), "Start (F1)");
+		btnNewButton.getActionMap().put("Start (F1)", buttonAction);
+		
 		btnNewButton.setBounds(10, 90, 90, 23);
 		frmMouseclicker.getContentPane().add(btnNewButton);
 		
-		//btnNewButton.getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW).
-        //put(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1,0), "F1_pressed");
-
-		//btnNewButton.getActionMap().put("F1_pressed", buttonpressed);
 		
-		JButton btnStop = new JButton("Stop");
+		JButton btnStop = new JButton("Stop (F2)");
 		
-		btnStop.addActionListener(new ActionListener() {
+		//btnStop.addActionListener(new ActionListener() {
+		buttonAction = new AbstractAction("Stop (F2)") {
 			public void actionPerformed(ActionEvent e) {
 				Start = false;
-				//System.out.println(Start);
-				t.stop();
-				//System.out.println("Clicking has terminated with a value of: " + Start);
 			}
-		});
+		};
+		 
+		btnStop.setAction(buttonAction);
+		 
+		btnStop.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+		        KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0), "Stop (F2)");
+		 
+		btnStop.getActionMap().put("Stop (F2)", buttonAction);
 		
 		btnStop.setBounds(117, 90, 90, 23);
 		frmMouseclicker.getContentPane().add(btnStop);
@@ -131,7 +164,6 @@ public class GUI {
 		lblMinimumInterval.setBounds(10, 24, 137, 14);
 		frmMouseclicker.getContentPane().add(lblMinimumInterval);
 		
-		//amountFormat = NumberFormat.getNumberInstance();
 		textField = new JTextField();
 		textField.setBounds(157, 21, 21, 20);
 		frmMouseclicker.getContentPane().add(textField);
@@ -140,20 +172,17 @@ public class GUI {
 		textField.addKeyListener(new KeyAdapter() {
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				try {
-	                low = Integer.parseInt(textField.getText()) * 1000;
+	                low = Double.parseDouble(textField.getText());
 	            } 
-				
-				catch (Exception e) {
-	                
+                catch (Exception e) {
 	            	if (textField.getText().trim().equals("")) {
-	                	//JOptionPane.showMessageDialog(frmMouseclicker, "Blank");
 	                }
+	            	
 	                else {
 	                	JOptionPane.showMessageDialog(frmMouseclicker, "Only Numbers Allowed");
 	                	textField.setText("");
 	                }
-	                //textField.setText("");
-	            }
+                }
 			}
 		});
 		
@@ -169,19 +198,17 @@ public class GUI {
 		textField_1.addKeyListener(new KeyAdapter() {
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				try {
-	                high = Integer.parseInt(textField_1.getText()) * 1000;
+	                high = Double.parseDouble(textField_1.getText());
 	            } 
 				
 				catch (Exception e) {
 	                
 	            	if (textField_1.getText().trim().equals("")) {
-	                	//JOptionPane.showMessageDialog(frmMouseclicker, "Blank");
 	                }
 	                else {
 	                	JOptionPane.showMessageDialog(frmMouseclicker, "Only Numbers Allowed");
 	                	textField_1.setText("");
 	                }
-	                //textField.setText("");
 	            }
 			}
 		});
